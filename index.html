@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Создание скриншота сайта</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+</head>
+<body>
+  <h1>Создание скриншота сайта</h1>
+  <input type="text" id="urlInput" placeholder="Введите URL сайта">
+  <button id="screenshotBtn">Создать скриншот</button>
+
+  <script>
+    // Обработчик клика на кнопку
+    document.getElementById("screenshotBtn").addEventListener("click", function() {
+      // Получаем значение из input
+      var url = document.getElementById("urlInput").value;
+
+      // Используем библиотеку html2canvas для создания скриншота
+      html2canvas(document.querySelector(url)).then(function(canvas) {
+        // Создаем ссылку для скачивания скриншота
+        var screenshotLink = document.createElement("a");
+        screenshotLink.href = canvas.toDataURL();
+        screenshotLink.download = "screenshot.png";
+
+        // Добавляем ссылку в документ и эмулируем клик для скачивания
+        document.body.appendChild(screenshotLink);
+        screenshotLink.click();
+
+        // Удаляем ссылку из документа
+        document.body.removeChild(screenshotLink);
+      });
+    });
+  </script>
+</body>
+</html>
