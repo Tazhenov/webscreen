@@ -1,35 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Создание скриншота сайта</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор путевых листов</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group label {
+        color: #000;
+    }
+    .btn-primary {
+        background-color: #000;
+        border-color: #000;
+    }
+    .btn-primary:hover {
+        background-color: #555;
+        border-color: #555;
+    }
+    h2 {
+        color: black;
+    }
+    .selected {
+        background-color: #007bff !important; /* Цвет выделенной строки */
+        color: #fff !important; /* Цвет текста выделенной строки */
+    }
+</style>
 </head>
 <body>
-  <h1>Создание скриншота сайта</h1>
-  <input type="text" id="urlInput" placeholder="Введите URL сайта">
-  <button id="screenshotBtn">Создать скриншот</button>
+<div class="container">
+    <h2 class="mt-5 dark">OTO УП г. Петропавловска</h2>
+    <form id="calcForm" class="mt-4">
+        <div class="form-group">
+            <label for="startMileage">Показания спидометра (на начало месяца):</label>
+            <input type="number" class="form-control" id="startMileage" name="startMileage">
+        </div>
+        <div class="form-group">
+            <label for="distance">Пройденный пробег (км):</label>
+            <input type="number" class="form-control" id="distance" name="distance">
+        </div>
+        <div class="form-group">
+            <label for="days">Количество дней:</label>
+            <input type="number" class="form-control" id="days" name="days">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="calculate()">Рассчитать</button>
+    </form>
+    <div id="result" class="mt-4"></div>
+</div>
 
-  <script>
-    // Обработчик клика на кнопку
-    document.getElementById("screenshotBtn").addEventListener("click", function() {
-      // Получаем значение из input
-      var url = document.getElementById("urlInput").value;
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+function calculate() {
+    var startMileage = parseInt(document.getElementById('startMileage').value);
+    var distance = parseInt(document.getElementById('distance').value);
+    var days = parseInt(document.getElementById('days').value);
 
-      // Используем библиотеку html2canvas для создания скриншота
-      html2canvas(document.querySelector(url)).then(function(canvas) {
-        // Создаем ссылку для скачивания скриншота
-        var screenshotLink = document.createElement("a");
-        screenshotLink.href = canvas.toDataURL();
-        screenshotLink.download = "screenshot.png";
+    var endMileage = startMileage;
+    var result = "<table class='table table-striped'><thead><tr><th scope='col'>Показания спидометра</th><th scope='col'>Пробег за день</th></tr></thead><tbody>";
 
-        // Добавляем ссылку в документ и эмулируем клик для скачивания
-        document.body.appendChild(screenshotLink);
-        screenshotLink.click();
+    var remainingDistance = distance;
+    for (var i = 0; i < days; i++) {
+        var minMileageToday = Math.max(30, distance / days - 10);
+        var maxMileageToday = Math.min(300, distance / days + 10);
+        var mileageToday = i === days - 1 ? remainingDistance : Math.round(Math.random() * (maxMileageToday - minMileageToday) + minMileageToday);
 
-        // Удаляем ссылку из документа
-        document.body.removeChild(screenshotLink);
-      });
-    });
-  </script>
+        endMileage += mileageToday;
+        remainingDistance -= mileageToday;
+        result += "<tr onclick='highlightRow(this)'><td>" + endMileage + "</td><td>" + mileageToday + "</td></tr>";
+    }
+
+    result += "</tbody></table>";
+
+    document.getElementById('result').innerHTML = result;
+}
+
+function highlightRow(row) {
+    // Убираем выделение со всех строк
+    var rows = row.parentNode.children;
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].classList.remove('selected');
+    }
+    // Добавляем выделение на текущую строку
+    row.classList.add('selected');
+}
+</script>
 </body>
 </html>
